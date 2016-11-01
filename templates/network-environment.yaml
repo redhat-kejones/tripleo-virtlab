@@ -1,0 +1,46 @@
+#This file is an example of an environment file for defining the isolated
+#networks and related parameters.
+resource_registry:
+  # Network Interface templates to use (these files must exist)
+  OS::TripleO::Controller::Net::SoftwareConfig:
+    /home/stack/templates/nic-configs/controller.yaml
+  OS::TripleO::Compute::Net::SoftwareConfig:
+    /home/stack/templates/nic-configs/compute.yaml
+  OS::TripleO::CephStorage::Net::SoftwareConfig:
+    /home/stack/templates/nic-configs/ceph-storage.yaml
+
+parameter_defaults:
+  # This section is where deployment-specific configuration is done
+  # Customize the IP subnets to match the local environment
+  InternalApiNetCidr: 172.17.0.0/24
+  TenantNetCidr: 172.18.0.0/24
+  StorageNetCidr: 172.19.0.0/24
+  StorageMgmtNetCidr: 172.20.0.0/24
+  ExternalNetCidr: 10.16.0.0/24
+  # CIDR subnet mask length for provisioning network
+  ControlPlaneSubnetCidr: '24'
+  # Customize the IP ranges on each network to use for static IPs and VIPs
+  InternalApiAllocationPools: [{'start': '172.17.0.10', 'end': '172.17.0.250'}]
+  TenantAllocationPools: [{'start': '172.18.0.10', 'end': '172.18.0.250'}]
+  StorageAllocationPools: [{'start': '172.19.0.10', 'end': '172.19.0.250'}]
+  StorageMgmtAllocationPools: [{'start': '172.20.0.10', 'end': '172.20.0.250'}]
+  # Leave room if the external network is also used for floating IPs
+  ExternalAllocationPools: [{'start': '10.16.0.20', 'end': '10.16.0.50'}]
+  # Gateway router for the external network
+  ExternalInterfaceDefaultRoute: 10.16.0.1
+  # Gateway router for the provisioning network (or Undercloud IP)
+  ControlPlaneDefaultRoute: 172.16.0.1
+  # Generally the IP of the Undercloud
+  EC2MetadataIp: 172.16.0.5
+  # Define the DNS servers (maximum 2) for the overcloud nodes
+  DnsServers: ["10.16.0.1"]
+  # Customize the VLAN IDs to match the local environment
+  InternalApiNetworkVlanID: 17
+  TenantNetworkVlanID: 18
+  StorageNetworkVlanID: 19
+  StorageMgmtNetworkVlanID: 20
+  #ExternalNetworkVlanID: 50
+  # Set to empty string to enable multiple external networks or VLANs
+  NeutronExternalNetworkBridge: "''"
+  # Customize bonding options, e.g. "mode=4 lacp_rate=1 updelay=1000 miimon=100"
+  BondInterfaceOvsOptions: "bond_mode=balance-slb"
